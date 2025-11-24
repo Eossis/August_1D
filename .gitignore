@@ -1,0 +1,6 @@
+build/
+libs/
+simulation.h5
+nob.exe
+nob.exe.old
+.vscode/
