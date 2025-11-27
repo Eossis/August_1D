@@ -27,6 +27,11 @@ private:
     Vector2 dragOffset = { 0, 0 };
     Rectangle windowrect;
     Vector2 screenSize;
+    Rectangle button_rect = Rectangle {0, screenSize.y * 0.04f, screenSize.x * 0.1f, screenSize.y * 0.04f};
+    u32 button_index_x = 0;
+    u32 button_index_y = 0;
+
+    bool side_indicator = false;
 
 public:
     InputHolder(const char* name, Vector2 position, Vector2 screenSize);
@@ -38,6 +43,11 @@ public:
     void draw();
 
     bool* get_show() { return &show; }
+    void hide_window() { show = false; }
+    void show_window() { show = true; }
+    void set_button_index(u32 index_x, u32 index_y) { button_index_x = index_x; button_index_y = index_y; }
+    void set_side_indicator() { side_indicator = true; }
+    void set_bottom_indicator() { side_indicator = false; }
 
 };
 

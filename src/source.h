@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "grid.h"
-#include "indexable.h"
 #include "source_interface.h"
 
 class Source : public Source_Interface

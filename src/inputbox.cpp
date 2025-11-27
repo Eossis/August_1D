@@ -29,14 +29,14 @@ Inputbox::Inputbox(const char* name, Vector2 offset, Vector2 size)
     name(name),
     offset(offset),
     size(size),
-    ratio(0.7f)
+    ratio(0.5f)
 {
     rect_label = Rectangle(offset.x, offset.y, size.x * (1 - ratio), size.y);
     rect_text = Rectangle(offset.x + (1 - ratio) * size.x, offset.y, size.x * ratio, size.y);
 }
 
 Inputbox::Inputbox(const char* name, Vector2 offset, 
-    Vector2 size, const char* initial_value = "", f32 ratio = 0.7)
+    Vector2 size, const char* initial_value = "", f32 ratio = 0.5)
     :
     name(name),
     offset(offset),
@@ -70,7 +70,8 @@ f32 Inputbox::get_value()
     validate_text();
     if (!valid) 
     {
-        throw std::runtime_error("Tried to retrieve invalid input in Inputbox"); 
+        return 0;
+        // throw std::runtime_error("Tried to retrieve invalid input in Inputbox"); 
     }
     return value; 
 }

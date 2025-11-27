@@ -9,7 +9,7 @@
 class Inputbox
 {
 private:
-    char text[16] = "";
+    char text[16] = "1e-9";
     const char* name;
     f32 value;
     bool valid;
@@ -19,8 +19,8 @@ private:
     bool should_be_positive;
     Vector2 offset;
     int fontsize = 11;
-    
     void validate_text();
+    
 public:
     const f32 ratio;
     const Vector2 size;

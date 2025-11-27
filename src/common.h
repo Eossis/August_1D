@@ -70,7 +70,8 @@ inline void linspace(f32* A, u64 N, f32 start, f32 stop)
 	}
 }
 
-inline void print_dtype_info(const H5::DataType& dt) {
+inline void print_dtype_info(const H5::DataType& dt) 
+{
 	H5T_class_t cls = dt.getClass();
 	std::cout << "Datatype class: ";
 	if (cls == H5T_STRING) std::cout << "STRING\n";

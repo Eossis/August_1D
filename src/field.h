@@ -4,9 +4,8 @@
 #include "common.h"
 #include "grid.h"
 #include "source.h"
-#include "indexable.h"
 
-class Field : public Indexable
+class Field
 {
 private:
 	f32* core = NULL;

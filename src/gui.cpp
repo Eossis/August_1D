@@ -50,30 +50,68 @@ Vector2 GUI::to_screenspace(f32 x, f32 y)
 
 void GUI::run()
 {
-    // f32 padding = 0.05;
-    // f32 spacing = 0.04;
-    // f32 y0 = 0.2;
-    // f32 x0 = 0.1;
-    const f32 input_width = 0.14;
-    const f32 input_height = 0.035;
+    //Grid
+    InputHolder gridInput("Grid", Vector2 {0.1, 0.1}, screenSize);
+    {
+        gridInput.set_button_index(0, 0);
 
-    Inputbox* inputbox = new Inputbox("X [m]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height));
+        Inputbox* X_inputbox = new Inputbox("X [m]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "10e-6", 0.5);
+        Inputbox* dx_inputbox = new Inputbox("dx [m]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "50e-9", 0.5);
+        Inputbox* T_inputbox = new Inputbox("T [s]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "500e-15", 0.5);
+        Inputbox* cour_inputbox = new Inputbox("cour [arb.]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "2", 0.5);
+        
+        gridInput.add_inputbox(X_inputbox);
+        gridInput.add_inputbox(dx_inputbox);
+        gridInput.add_inputbox(T_inputbox);
+        gridInput.add_inputbox(cour_inputbox);
+
+        auto check_1 = [X_inputbox, dx_inputbox]() 
+            { return X_inputbox->get_value() > dx_inputbox->get_value(); };
+            
+        auto check_2 = [cour_inputbox]() 
+            { return ceilf(cour_inputbox->get_value()) == cour_inputbox->get_value(); };
+        
+        auto check_3 = [cour_inputbox]() 
+            { return ceilf(cour_inputbox->get_value()) > 0; };
+        
+        gridInput.add_validation_check(check_1);
+        gridInput.add_validation_check(check_2);
+        gridInput.add_validation_check(check_3);
+    }
+
+    //Source
+    InputDropDown sourceDropDown("Sources", Vector2 {0.1, 0.1}, screenSize);
+    sourceDropDown.set_button_index(1, 0);
     
-    InputHolder inputholder("Grid", Vector2 {0.1, 0.1}, screenSize);
-    inputholder.add_inputbox(inputbox);
-    // auto i1 = new Inputbox("X [m]", "1e-6", get_rect_screenspace(x0 + padding, y0 + padding, width, height), true);
-    // auto i2 = new Inputbox("dx [m]", "20e-9", get_rect_screenspace(x0 + padding, y0 + spacing + padding, width, height), true);
-    // auto i3 = new Inputbox("T [s]", "300e-15", get_rect_screenspace(x0 + padding, y0 + spacing * 2 + padding, width, height), true);
-    // auto i4 = new Inputbox("cour", "2", get_rect_screenspace(x0 + padding, y0 + spacing * 3 + padding, width, height), true);
+    auto source_setup = [this](u32 subbutton_index_x, u32 subbutton_index_y) -> InputHolder*
+    {
+        InputHolder *sourceInput = new InputHolder("Source", Vector2 {0.1, 0.1}, Vector2(800, 600));
+        sourceInput->set_button_index(subbutton_index_x, subbutton_index_y);
+        Inputbox* duration_inputbox = new Inputbox("FWHM [s]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "100e-15", 0.5);
+        Inputbox* power_inputbox = new Inputbox("P [GW/cm2]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "10", 0.5);
+        Inputbox* wl_inputbox = new Inputbox("Wavelength [m]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "1300e-9", 0.5);
+        
+        sourceInput->add_inputbox(duration_inputbox);
+        sourceInput->add_inputbox(power_inputbox);
+        sourceInput->add_inputbox(wl_inputbox);
 
-    // inputholder.add_inputbox(i1);
-    // inputholder.add_inputbox(i2);
-    // inputholder.add_inputbox(i3);
-    // inputholder.add_inputbox(i4);
+        auto check_1 = [duration_inputbox]() 
+            { return duration_inputbox->get_value() > 0; };
+            
+        auto check_2 = [power_inputbox]() 
+            { return ceilf(power_inputbox->get_value()) > 0; };
+        
+        auto check_3 = [wl_inputbox]() 
+            { return ceilf(wl_inputbox->get_value()) > 0; };
+        
+        sourceInput->add_validation_check(check_1);
+        sourceInput->add_validation_check(check_2);
+        sourceInput->add_validation_check(check_3);
 
-    // auto check = [i1, i2]() { return i2->get_value() < i1->get_value(); };
-    // inputholder.add_validation_check(check);
+        return sourceInput;
+    };
 
+    sourceDropDown.set_generating_function(source_setup);
 
     //Main controls - top left
     while (!exitWindow && !WindowShouldClose())
@@ -103,8 +141,9 @@ void GUI::run()
 
         ClearBackground(RAYWHITE);
         exitWindow = GuiWindowBox(Rectangle{ 0, 0, (float)screenSize.x, (float)screenSize.y }, "#198# August 1D");
-
-        inputholder.draw();
+        
+        gridInput.draw();
+        sourceDropDown.draw();
 
     draw();
 

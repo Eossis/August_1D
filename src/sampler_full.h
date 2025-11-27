@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "grid.h"
-#include "indexable.h"
 #include "field.h"
 #include "sampler_interface.h"
 #include "H5Cpp.h"
