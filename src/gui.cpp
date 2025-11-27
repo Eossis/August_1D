@@ -51,7 +51,7 @@ Vector2 GUI::to_screenspace(f32 x, f32 y)
 void GUI::run()
 {
     //Grid
-    InputHolder gridInput("Grid", Vector2 {0.1, 0.1}, screenSize);
+    InputHolder gridInput("Grid", Vector2 {0.02, 0.7}, screenSize);
     {
         gridInput.set_button_index(0, 0);
 
@@ -83,14 +83,22 @@ void GUI::run()
     InputDropDown sourceDropDown("Sources", Vector2 {0.1, 0.1}, screenSize);
     sourceDropDown.set_button_index(1, 0);
     
-    auto source_setup = [this](u32 subbutton_index_x, u32 subbutton_index_y) -> InputHolder*
+    auto source_setup = [this](u32 n, u32 subbutton_index_x, u32 subbutton_index_y) -> InputHolder*
     {
-        InputHolder *sourceInput = new InputHolder("Source", Vector2 {0.1, 0.1}, Vector2(800, 600));
+        string name = string("Source_")+std::to_string(n);
+        InputHolder *sourceInput = new InputHolder(name
+                , Vector2 {0.3, 0.7}, Vector2(800, 600));
         sourceInput->set_button_index(subbutton_index_x, subbutton_index_y);
+
+        Inputbox* name_inputbox = new Inputbox("Name", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), name.c_str(), 0.5);
         Inputbox* duration_inputbox = new Inputbox("FWHM [s]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "100e-15", 0.5);
         Inputbox* power_inputbox = new Inputbox("P [GW/cm2]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "10", 0.5);
         Inputbox* wl_inputbox = new Inputbox("Wavelength [m]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "1300e-9", 0.5);
         
+        name_inputbox->disable_validation();
+        sourceInput->name_override = name_inputbox->get_value_string();
+
+        sourceInput->add_inputbox(name_inputbox);
         sourceInput->add_inputbox(duration_inputbox);
         sourceInput->add_inputbox(power_inputbox);
         sourceInput->add_inputbox(wl_inputbox);
@@ -110,8 +118,41 @@ void GUI::run()
 
         return sourceInput;
     };
-
     sourceDropDown.set_generating_function(source_setup);
+
+    //Samplers
+    InputDropDown samplerDropDown("Samplers", Vector2 {0.1, 0.1}, screenSize);
+    samplerDropDown.set_button_index(2, 0);
+    
+    auto sampler_setup = [this](u32 n, u32 subbutton_index_x, u32 subbutton_index_y) -> InputHolder*
+    {
+        string name = string("Sampler_")+std::to_string(n);
+        InputHolder *samplerInput = new InputHolder(name
+                , Vector2 {0.6, 0.7}, Vector2(800, 600));
+        samplerInput->set_button_index(subbutton_index_x, subbutton_index_y);
+
+        Inputbox* name_inputbox = new Inputbox("Name", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), name.c_str(), 0.5);
+        Inputbox* target = new Inputbox("Target", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "E", 0.5);
+        Inputbox* sampling_rate = new Inputbox("Sampling rate [s]", to_screenspace(0.1, 0.1), to_screenspace(input_width, input_height), "1e-15", 0.5);
+        
+        name_inputbox->disable_validation();
+        samplerInput->name_override = name_inputbox->get_value_string();
+        
+        target->disable_validation();
+
+        samplerInput->add_inputbox(name_inputbox);
+        samplerInput->add_inputbox(target);
+        samplerInput->add_inputbox(sampling_rate);
+
+        auto check_1 = [sampling_rate]() 
+            { return sampling_rate->get_value() > 0; };
+            
+        
+        samplerInput->add_validation_check(check_1);
+
+        return samplerInput;
+    };
+    samplerDropDown.set_generating_function(sampler_setup);
 
     //Main controls - top left
     while (!exitWindow && !WindowShouldClose())
@@ -144,6 +185,7 @@ void GUI::run()
         
         gridInput.draw();
         sourceDropDown.draw();
+        samplerDropDown.draw();
 
     draw();
 

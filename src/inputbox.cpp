@@ -2,6 +2,12 @@
 
 void Inputbox::validate_text()
 {
+    if (validation_disabled)
+    {
+        valid = true;
+        return;
+    }
+
     char buffer[17] = { 0 };
     strncpy(buffer, text, 16);
 
@@ -57,12 +63,19 @@ void Inputbox::update_position(Vector2 new_offset)
 
 void Inputbox::draw()
 {
+    value_string = string(text);
+
     DrawText(name, rect_label.x, rect_label.y + rect_label.height / 4, fontsize, DARKGRAY);
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         Vector2 mouse = GetMousePosition();
         editing = CheckCollisionPointRec(mouse, rect_text);
     }
     GuiTextBox(rect_text, text, fontsize, editing);
+}
+
+string* Inputbox::get_value_string() 
+{ 
+    return &value_string;
 }
 
 f32 Inputbox::get_value() 

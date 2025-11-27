@@ -6,7 +6,6 @@
 
 #define BUILD_FOLDER "build/"
 #define SRC_FOLDER   "src/"
-#define SRC_FOLDER   "src/"
 #define TEMP_FOLDER   "temp/"
 
 int get_nfiles(char* path)
@@ -66,6 +65,7 @@ int main(int argc, char **argv)
 {
     NOB_GO_REBUILD_URSELF(argc, argv);
     if (!mkdir_if_not_exists(BUILD_FOLDER)) return 1;
+    if (!mkdir_if_not_exists(TEMP_FOLDER)) return 1;
     
     Cmd cmd = {0};
     Procs procs = {0};
@@ -132,9 +132,9 @@ int main(int argc, char **argv)
 
     if (!cmd_run(&cmd)) return 1;
 
-    // cmd_append(&cmd, "build\\August");
+    cmd_append(&cmd, "build\\August");
 
-    // if (!cmd_run(&cmd)) return 1;
+    if (!cmd_run(&cmd)) return 1;
 
     return 0;
 }

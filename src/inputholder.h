@@ -14,7 +14,7 @@ class InputHolder
 private:
     vector<Inputbox*> inputboxes;
     vector<std::function<bool()>> validation_checks;
-    const char *name;
+    string name;
     Vector2 position;
 
     f32 padding = 0.05;
@@ -24,6 +24,8 @@ private:
     bool valid = true;
     bool show = true;
     bool dragging = false;
+    bool delete_button_enabled = false;
+    bool marked_for_deletion = false;
     Vector2 dragOffset = { 0, 0 };
     Rectangle windowrect;
     Vector2 screenSize;
@@ -34,7 +36,9 @@ private:
     bool side_indicator = false;
 
 public:
-    InputHolder(const char* name, Vector2 position, Vector2 screenSize);
+    string *name_override = NULL;
+
+    InputHolder(string name, Vector2 position, Vector2 screenSize);
     ~InputHolder();
 
     void add_inputbox(Inputbox* inputbox);
@@ -48,7 +52,9 @@ public:
     void set_button_index(u32 index_x, u32 index_y) { button_index_x = index_x; button_index_y = index_y; }
     void set_side_indicator() { side_indicator = true; }
     void set_bottom_indicator() { side_indicator = false; }
-
+    void enable_delete_button() { delete_button_enabled = true; }
+    void disable_delete_button() { delete_button_enabled = false; }
+    bool is_marked_for_deletion() { return marked_for_deletion; }
 };
 
 #endif

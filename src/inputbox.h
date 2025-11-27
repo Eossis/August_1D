@@ -10,6 +10,7 @@ class Inputbox
 {
 private:
     char text[16] = "1e-9";
+    string value_string;
     const char* name;
     f32 value;
     bool valid;
@@ -19,6 +20,7 @@ private:
     bool should_be_positive;
     Vector2 offset;
     int fontsize = 11;
+    bool validation_disabled = false;
     void validate_text();
     
 public:
@@ -35,6 +37,10 @@ public:
     bool is_valid();
 
     void set_fontize(int new_fontsize) { fontsize = new_fontsize; }
+    void disable_validation() { validation_disabled = true; }
+    void enable_validation() { validation_disabled = false; }
+    string* get_value_string();
+
 };
 
 

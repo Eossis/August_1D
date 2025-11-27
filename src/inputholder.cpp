@@ -1,6 +1,6 @@
 #include "inputholder.h"
 
-InputHolder::InputHolder(const char* name, Vector2 position, Vector2 screenSize)
+InputHolder::InputHolder(string name, Vector2 position, Vector2 screenSize)
     : name(name), position(position), screenSize(screenSize)
 {
     windowrect = Rectangle{position.x * screenSize.x, position.y * screenSize.y, 
@@ -52,6 +52,11 @@ bool InputHolder::is_valid()
 
 void InputHolder::draw()
 {
+    if (name_override != NULL)
+    {
+        name = *name_override;
+    }
+    
     if (side_indicator)
     {
         if (is_valid())
@@ -86,7 +91,7 @@ void InputHolder::draw()
         Rectangle{button_rect.x + button_rect.width * button_index_x, 
             button_rect.y + button_rect.height * button_index_y, 
             button_rect.width, button_rect.height}
-        , name, &show);
+        , name.c_str(), &show);
 
 
     if (!show)
@@ -103,7 +108,7 @@ void InputHolder::draw()
         DrawRectangle(windowrect.x - 2, windowrect.y - 2, windowrect.width + 3, windowrect.height + 3, RED);
     }
 
-    int close_result = GuiWindowBox(windowrect, name);
+    int close_result = GuiWindowBox(windowrect, name.c_str());
     if (close_result == 1)
     {
         show = false;
@@ -111,7 +116,8 @@ void InputHolder::draw()
 
     Vector2 mouse = GetMousePosition();
 
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mouse, windowrect)) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mouse, windowrect)) 
+    {
         dragging = true;
         dragOffset.x = mouse.x - windowrect.x;
         dragOffset.y = mouse.y - windowrect.y;
@@ -135,6 +141,22 @@ void InputHolder::draw()
         else
         {
             dragging = false;
+        }
+    }
+
+    if (delete_button_enabled)
+    {
+        Rectangle delete_button_rect = Rectangle{
+            windowrect.x + windowrect.width - 105,
+            windowrect.y + 3,
+            80,
+            20
+        };
+
+        int result = GuiButton(delete_button_rect, "Delete");
+        if (result == 1)
+        {
+            marked_for_deletion = true;
         }
     }
 

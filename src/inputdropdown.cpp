@@ -17,6 +17,28 @@ InputDropDown::~InputDropDown()
 
 void InputDropDown::draw()
 {
+    u32 tempSize = inputholders.size();
+    for (vector<InputHolder*>::iterator it=inputholders.begin(); 
+                                it!=inputholders.end();)
+    {
+        if((*it)->is_marked_for_deletion()) 
+        {
+            it = inputholders.erase(it);
+        }
+        else 
+            ++it;
+    }
+    if (tempSize != inputholders.size())
+    {
+        // Re-index buttons
+        u32 idx = 0;
+        for (auto holder : inputholders)
+        {
+            holder->set_button_index(button_index_x, idx + 1);
+            idx++;
+        }
+    }
+
     GuiToggle(
         Rectangle{button_rect.x + button_rect.width * button_index_x,
              button_rect.y + button_rect.height * button_index_y, button_rect.width, 
@@ -34,9 +56,10 @@ void InputDropDown::draw()
 
     if (pressed == 1)
     {
-        InputHolder* new_holder = func(button_index_x, inputholders.size() + 1);
+        InputHolder* new_holder = func(inputholders.size(), button_index_x, inputholders.size() + 1);
         new_holder->hide_window();
         new_holder->set_side_indicator();
+        new_holder->enable_delete_button();
         inputholders.push_back(new_holder);
     }
 
@@ -44,15 +67,6 @@ void InputDropDown::draw()
     {
         inputholder->draw();
     }
-
-    // if (is_valid())
-    // {
-    //     DrawRectangle(windowrect.x - 2, windowrect.y - 2, windowrect.width + 3, windowrect.height + 3, GREEN);
-    // }
-    // else
-    // {
-    //     DrawRectangle(windowrect.x - 2, windowrect.y - 2, windowrect.width + 3, windowrect.height + 3, RED);
-    // }
 
     // int close_result = GuiWindowBox(windowrect, name);
     // if (close_result == 1)

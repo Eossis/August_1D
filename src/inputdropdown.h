@@ -14,7 +14,7 @@ class InputDropDown
 {
 private:
     vector<InputHolder*> inputholders;
-    std::function<InputHolder*(u32, u32)> func;
+    std::function<InputHolder*(u32, u32, u32)> func;
 
     const char *name;
     Vector2 position;
@@ -24,7 +24,7 @@ private:
     f32 width = 0.14;
     f32 height = 0.035;
     bool valid = true;
-    bool show = true;
+    bool show = false;
     Vector2 screenSize;
     Rectangle button_rect = Rectangle {0, screenSize.y * 0.04f, screenSize.x * 0.1f, screenSize.y * 0.04f};
     u32 button_index_x = 0;
@@ -37,7 +37,8 @@ public:
     void draw();
 
     void set_button_index(u32 index_x, u32 index_y) { button_index_x = index_x; button_index_y = index_y; }
-    void set_generating_function(std::function<InputHolder*(u32, u32)> func){this->func = func;}
+    void set_generating_function(std::function<InputHolder*(u32, u32, u32)> func)
+        {this->func = func;}
 };
 
 #endif
